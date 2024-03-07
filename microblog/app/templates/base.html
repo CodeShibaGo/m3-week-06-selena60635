@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+    <head>
+        <!-- 如果有title這個值則代入使用這個 -->
+      {% if title %}
+      <title>{{ title }} - 微型部落格 </title>
+      <!-- 否則使用這個 -->
+      {% else %}
+      <title> 歡迎來到微型部落格 </title>
+      {% endif %}
+    </head>
+    <body>
+        <div> 微型部落格： <a href="/index"> 首頁 </a></div>
+        <hr>
+        <!-- 可以用來替換內容 -->
+        {% block content %}{% endblock %}
+    </body>
+</html>
