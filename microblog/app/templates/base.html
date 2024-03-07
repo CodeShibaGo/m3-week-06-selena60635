@@ -10,8 +10,20 @@
       {% endif %}
     </head>
     <body>
-        <div> 微型部落格： <a href="/index"> 首頁 </a></div>
+        <div> 微型部落格：
+            <a href="{{ url_for('index') }}"> 首頁 </a>
+            <a href="{{ url_for('login') }}"> 登入 </a>
+        </div>
         <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
         <!-- 可以用來替換內容 -->
         {% block content %}{% endblock %}
     </body>
