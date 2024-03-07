@@ -1,11 +1,14 @@
 from flask import render_template, flash, redirect, url_for
-from app import app
 from app.forms import LoginForm
+from flask_login import current_user, login_user, logout_user, login_required
+import sqlalchemy as sa
+from app import app, db
+from app.models import User
 
 @app.route('/')
 @app.route('/index')
+@login_required
 def index():
-    user = {'username': 'Selena'}
     posts = [
         {
             'author': {'username': 'John'},
@@ -16,15 +19,24 @@ def index():
             'body': '復仇者聯盟電影真的很酷！'
         }
     ]
-    return render_template('index.html', title='首頁', user=user, posts=posts)
+    return render_template('index.html', title='首頁', posts=posts)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        flash('使用者 {} 的登入請求，記住我 ={}'.format(
-            form.username.data, form.remember_me.data))
+        user = db.session.scalar(
+            sa.select(User).where(User.username == form.username.data))
+        if user is None or not user.check_password(form.password.data):
+            flash('無效的使用者名稱或密碼')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
         return redirect(url_for('index'))
     return render_template('login.html', title='登入', form=form)
 
-
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
