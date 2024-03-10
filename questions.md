@@ -103,9 +103,33 @@ print(db_pass)  # mypassword
 
 ## Q: Flask-Migrate 如何使用？ #124
 
-## Q: 如何使用 SQLAlchemy 下 Raw SQL？ #125
+Flask-Migrate是Flask中，用於管理DB Migration的擴充模組，可以對資料庫進行版本控制，與SQLAlchemy搭配做使用。
 
-connection.execute 的好處是更簡潔。cursor.execute 的好處是標準/通用
+在開發過程中，若是資料庫模型有做更動，都需要對資料庫同步進行更動，Flask-Migrate 可以幫我們自動化同步、更新資料庫，而不需要手動進行操作，並且也可以撤銷所做過的資料庫遷移，與git的概念有些類似。
+
+安裝 Flask-Migrate - `pip install flask-migrate`。
+
+- 初始設定。
+
+```python
+from flask_migrate import Migrate
+# …
+migrate = Migrate(app, db)
+```
+
+- 建立第一個遷移資料庫。
+    
+    初始化資料庫 - `flask db init`，建立遷移資料庫。
+    
+    建立資料庫遷移腳本 - `flask db migrate -m "*更新資訊*"`。
+    
+    更新到最新版本 - `flask db upgrade`。
+    
+- 資料庫已成功更新、同步。
+
+若想刪除遷移資料庫並重新建立，除了刪除 migrations 資料夾外，資料庫中的 alembic_version 表格也要一併刪除。
+
+## Q: 如何使用 SQLAlchemy 下 Raw SQL？ #125
 
 ## Q: 如何用土炮的方式建立 Table？ #126
 
