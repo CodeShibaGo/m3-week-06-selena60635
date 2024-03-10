@@ -253,3 +253,40 @@ dbmy.close()
 [參考資料](https://www.runoob.com/python3/python3-mysql.html)
 
 ## Q: 什麼是密碼雜湊？如何使用 Python 實現？ #129
+
+### 在密碼中加點料
+
+密碼雜湊是一種安全手段，透過在密碼中隨機加入一系列亂碼(加點鹽)，使其轉換為一個長編碼字串，讓別人無法輕易破解我們的使用者或是會員的密碼，並且這些操作是不可逆的，即使有雜湊密碼也無法還原回原本的密碼，因為每次密碼雜湊都是使用不同的料。*加了甚麼料，鹽加多少，只有系統知道*
+
+在python中，可以使用各種套件來進行密碼雜湊的運算，這裡我們使用 Werkzeug 做為範例。
+
+- 開啟python編譯器模擬
+- 產生密碼雜湊
+    
+    `generate_password_hash('*密碼*')` - 產生密碼雜湊，長編碼字串。
+    
+    ```python
+    *from* werkzeug.security *import* generate_password_hash, check_password_hash
+    ```
+    
+    ```python
+    # 第一次產生
+    test = generate_password_hash('selena')
+    print(test)
+    # scrypt:32768:8:1$EJy5QXtYCe9JH56B$df289fe8f70a7a5ebcbdb591f837aad267609d2d32c8e5d3595ecbad734c80b7fa33d2a0d5a98878626967701b0d97c8a5ea872b1ecdd4bac501b8f637e842e7
+    # 再產生一次看看，每次產生都不同
+    test = generate_password_hash('selena')
+    print(test)
+    # scrypt:32768:8:1$eCDBBNa60IJbACm7$f68b643f5415bceee2d674027a64d886910b7aed3606166f773821fb57357d929c280eb5125ca1fd962902651022bedcdad47e3d79d186a5474f07e25cf4808e
+    ```
+    
+- 驗證密碼
+    
+    `check_password_hash('*密碼*')` - 驗證密碼雜湊，回傳為true或false。
+    
+    ```python
+    check_password_hash(test, 'selena')
+    # True
+    check_password_hash(test, 'haha')
+    # False
+    ```
