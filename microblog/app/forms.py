@@ -20,14 +20,14 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
     def validate_username(self, username):
-        user = db.session.scalar(sa.select(User).where(
-            User.username == username.data))
+        user = db.session.scalar(sa.select(User).from_statement(
+            sa.text(f"SELECT * FROM user WHERE username = '{username.data}'")))
         if user is not None:
-            raise ValidationError('Please use a different username.')
-
+            raise ValidationError('此名稱已有人使用。')
+        
     def validate_email(self, email):
-        user = db.session.scalar(sa.select(User).where(
-            User.email == email.data))
+        user = db.session.scalar(sa.select(User).from_statement(
+            sa.text(f"SELECT * FROM user WHERE email = '{email.data}'")))       
         if user is not None:
             raise ValidationError('Please use a different email address.')
         
@@ -42,7 +42,7 @@ class EditProfileForm(FlaskForm):
 
     def validate_username(self, username):
         if username.data != self.original_username:
-            user = db.session.scalar(sa.select(User).where(
-                User.username == self.username.data))
+            user = db.session.scalar(
+                sa.select(User).from_statement(sa.text(f"SELECT * FROM user WHERE username = '{self.username.data}'")))
             if user is not None:
                 raise ValidationError('Please use a different username.')
