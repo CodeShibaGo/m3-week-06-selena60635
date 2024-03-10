@@ -73,7 +73,7 @@ print(db_pass)  # mypassword
 ## Q: 如何使用 Flask-SQLAlchemy 連接上 MySQL？ #123
 
 - 確認有安裝MySQL。
-- 安裝 PyMySQL - ****`pip install PyMySQL`，Python中用來操作MySQL的 DBAPI。
+- 安裝 PyMySQL - `pip install PyMySQL`，Python中用來操作MySQL的 DBAPI。
 - 準備好你的資料庫。
     
     **使用MySQL的情況**與sqlite不同，**SQL ALChemy不會自動幫我們建立資料庫**，`mysql -u root -p`登入自行創建。
@@ -86,7 +86,7 @@ print(db_pass)  # mypassword
 - Flask-SQLAlchemy初始設定，在你的__init__.py加入。
     
     ```python
-    *from* flask_sqlalchemy *import* SQLAlchemy
+    from flask_sqlalchemy import SQLAlchemy
     ```
     
 - Flask-SQLAlchemy 配置，與你的MySQL服務器作連接。
@@ -121,7 +121,7 @@ migrate = Migrate(app, db)
     
     初始化資料庫 - `flask db init`，建立遷移資料庫。
     
-    建立資料庫遷移腳本 - `flask db migrate -m "*更新資訊*"`。
+    建立資料庫遷移腳本 - `flask db migrate -m "更新資訊"`。
     
     更新到最新版本 - `flask db upgrade`。
     
@@ -130,6 +130,73 @@ migrate = Migrate(app, db)
 若想刪除遷移資料庫並重新建立，除了刪除 migrations 資料夾外，資料庫中的 alembic_version 表格也要一併刪除。
 
 ## Q: 如何使用 SQLAlchemy 下 Raw SQL？ #125
+
+### SQLAlchemy Core資料庫連接操作
+
+- 引擎配置
+
+`Engine`是資料庫與其 DBAPI 的基礎架構，透過DBAPI與資料庫做連接，在 SQLAlchemy 應用程序上做使用。
+
+```python
+# 匯入create_engine()
+from sqlalchemy import create_engine
+#……
+# 建立一個引擎實例，並賦值給 engine
+engine = create_engine("資料庫+DBAPI://username:password@host:port/database")
+```
+
+- 開始對資料庫進行操作
+
+`engine.connect()` - 用來建立一個**資料庫與應用程式的連接器**。
+
+`execute()` - 連接器用來執行SQL 語句的方法，第二個參數可以是物件，或是物件組成的陣列。
+
+`text()` - 用來創建SQL語言。*你可以把它想像成是SQL翻譯機，翻成python看得懂的*
+
+```python
+# 插入數筆資料
+with engine.connect() as con:
+    data = ( { "id": 1, "title": "The Hobbit", "primary_author": "Tolkien" },
+             { "id": 2, "title": "The Silmarillion", "primary_author": "Tolkien" },
+    )
+    statement = text("""INSERT INTO book(id, title, primary_author) VALUES(:id, :title, :primary_author)""")
+    for line in data:
+        con.execute(statement, line)
+        con.commit()
+```
+
+插入資料時如果資料有重複導致錯誤怎麼辦？看看`rollback()`、`commit()`、`close()`的用法。
+
+```python
+with engine.connect() as connection:
+# 試試插入一筆資料
+    try:
+        connection.execute(text("INSERT INTO book VALUES (4, 'HAHA')"))
+        connection.commit()  # 要記得commit()提交更動，否則不會成功執行
+        print("成功")
+# 插入失敗、發生異常...回滾(回復)
+    except:
+        connection.rollback()
+        print("失敗")
+```
+
+為什麼都沒有使用到`close()`呢？看看下面兩個範例。
+
+```python
+# 印出book中所有資料，使用with語句會自動關閉，engine.connect()用完就丟
+with engine.connect() as connection:
+    result = connection.execute(text("""SELECT * FROM book"""))
+    for row in result:
+        print (row)
+```
+
+```python
+# 印出book中所有資料，沒有使用with語句的情況，就要手動把連接口關閉。
+result = engine.connect().execute(text("""SELECT * FROM book"""))
+for row in result:
+    print(row)
+engine.connect().close()   # 要自己寫close()
+```
 
 ## Q: 如何用土炮的方式建立 Table？ #126
 
