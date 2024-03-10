@@ -263,7 +263,7 @@ dbmy.close()
 - 開啟python編譯器模擬
 - 產生密碼雜湊
     
-    `generate_password_hash('*密碼*')` - 產生密碼雜湊，長編碼字串。
+    `generate_password_hash('密碼')` - 產生密碼雜湊，長編碼字串。
     
     ```python
     *from* werkzeug.security *import* generate_password_hash, check_password_hash
@@ -282,7 +282,7 @@ dbmy.close()
     
 - 驗證密碼
     
-    `check_password_hash('*密碼*')` - 驗證密碼雜湊，回傳為true或false。
+    `check_password_hash('密碼')` - 驗證密碼雜湊，回傳為true或false。
     
     ```python
     check_password_hash(test, 'selena')
