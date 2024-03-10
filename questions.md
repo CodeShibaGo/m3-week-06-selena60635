@@ -200,4 +200,56 @@ engine.connect().close()   # 要自己寫close()
 
 ## Q: 如何用土炮的方式建立 Table？ #126
 
+### PyMySQL 資料庫庫連接操作
+
+我們知道要與資料庫做連接、查詢操作，需要一個 DBAPI 工具，在 SQLAlchemy 內有包含用於各資料庫的預設 DBAPI。
+
+**PyMySQL 就是 Python3 連接 MySQL 的 DBAPI**，這個範例我們直接使用 PyMySQL 來進行操作。
+
+`pip install PyMySQL` - 安裝 PyMySQL。
+
+`execute()` - 連接器用來執行SQL 語句的方法，與`engine`不同的是，**PyMySQL 可以支援直接寫RAW SQL**，**不需要使用 `text()` 創建**。
+
+`fetchone()` - 讀取一行資料。 
+
+`fetchall()` - 讀取所有資料。 
+
+- 連接前，請確保已經建立好資料庫
+- 打開資料庫連接口
+
+```python
+# 匯入 pymysql 來做使用
+import pymysql
+# 使用連接器，打開資料庫與腳本連接口
+dbmy = pymysql.connect(host='172.26.243.211',
+                       user='root',
+	                     password='papy10319',
+	                     database='data')
+# 使用 cursor() 建立一個連接器游標，要用游標來進行操作
+cursor = dbmy.cursor()
+```
+
+- 開始對資料庫進行操作
+
+```python
+###創建表格
+# 執行SQL語句，如果EMPLOYEE已存在則刪除
+cursor.execute("DROP TABLE IF EXISTS EMPLOYEE")
+# 將建立表格的SQL語句賦值給sql
+sql = """CREATE TABLE EMPLOYEE (
+         FIRST_NAME  CHAR(20) NOT NULL,
+         LAST_NAME  CHAR(20),
+         AGE INT,  
+         SEX CHAR(1),
+         INCOME FLOAT )"""
+# 執行 
+cursor.execute(sql)
+# 執行完所有的動作要記得關閉資料庫連接
+dbmy.close()
+```
+
+- 運行腳本，如果資料庫有成功連接，你可以發現已經新增了一個表格。
+
+[參考資料](https://www.runoob.com/python3/python3-mysql.html)
+
 ## Q: 什麼是密碼雜湊？如何使用 Python 實現？ #129
