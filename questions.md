@@ -19,11 +19,11 @@
 
 ## Q: python-dotenv 如何使用？ #119
 
-Python dotenv 是一個用於加載環境變數的Python模組，可以從 .env 文件中加載環境變數，並使其得以運用在應用程式中
+Python dotenv 是一個用於加載環境變數的Python模組，可以從 .env 文件中加載環境變數，並使其得以運用在應用程式中。
 
-安裝 python-dotenv - `pip install python-dotenv`
+安裝 python-dotenv - `pip install python-dotenv`。
 
-如果安裝成功後無法使用`dotenv --help`…等dotenv指令；安裝 python-dotenv 命令行介面 - `pip install "python-dotenv[cli]"`
+如果安裝成功後無法使用`dotenv --help`…等dotenv指令；安裝 python-dotenv 命令行介面 - `pip install "python-dotenv[cli]"`。
 
 查看模組詳細資訊 - `pip show python-dotenv`，包含模組安裝路徑。
 
@@ -42,17 +42,17 @@ DB_PASS=mypassword
 2. 在專案資料夾中，創建一個`檔案名稱.py`，用以載入.env文件配置。
 
 ```python
-# 載入python的os模組
+# 載入python的os模組。
 import os
-# 從dotenv模組中匯入load_dotenv函數，用於加載.env 文件中的環境變數
+# 從dotenv模組中匯入load_dotenv函數，用於加載.env 文件中的環境變數。
 from dotenv import load_dotenv
-# 執行load_dotenv函數，匯入目前專案資料夾下的.env文件中的環境變數，以便使用
+# 執行load_dotenv函數，匯入目前專案資料夾下的.env文件中的環境變數，以便使用。
 load_dotenv()
 # 使用os.getenv()函數從環境變數中提取DB_HOST的值，並將值赋值给變數db_host。
 db_host = os.getenv("DB_HOST")
 db_user = os.getenv("DB_USER")
 db_pass = os.getenv("DB_PASS")
-# 印出變數db_host值
+# 印出變數db_host值。
 print(db_host)  # localhost
 print(db_user)  # myuser
 print(db_pass)  # mypassword
@@ -63,13 +63,43 @@ print(db_pass)  # mypassword
 **.flaskenv**
 
 專屬於 Flask 製作的專案，需要創建在專案根目錄，在**開啟時會自動載入.flaskenv文件**，通常包含一些特定於 Flask 的變數，例如**FLASK_APP**和**FLASK_ENV**等。
-.**env**
+
+**.env**
 
 更通用，**不限於任何特定框架或工具**，可以用於任何類型的應用程式。它可以包含各種類型的環境變數，但在一般情況下不會自動載入，要安裝python-dotenv並自行匯入。
 
-雖然他們是**可以同時使用**的，但在某些情况下可能會發生衝突，例如：同時使用**.env**和**.flaskenv**文件，並且兩者都包含相同的環境變數時，在載入時就會發生衝突。因此在使用時要小心管理確保不會互相干擾。
+雖然他們是**可以同時使用**的，但在某些情况下可能會發生衝突，例如：同時使用.env和.flaskenv文件，並且兩者都包含相同的環境變數時，在載入時就會發生衝突。因此在使用時要小心管理確保不會互相干擾。
 
 ## Q: 如何使用 Flask-SQLAlchemy 連接上 MySQL？ #123
+
+- 確認有安裝MySQL。
+- 安裝 PyMySQL - ****`pip install PyMySQL`，Python中用來操作MySQL的 DBAPI。
+- 準備好你的資料庫。
+    
+    **使用MySQL的情況**與sqlite不同，**SQL ALChemy不會自動幫我們建立資料庫**，`mysql -u root -p`登入自行創建。
+    
+    ```sql
+    create database 資料庫名稱;
+    use 資料庫名稱;
+    ```
+    
+- Flask-SQLAlchemy初始設定，在你的__init__.py加入。
+    
+    ```python
+    *from* flask_sqlalchemy *import* SQLAlchemy
+    ```
+    
+- Flask-SQLAlchemy 配置，與你的MySQL服務器作連接。
+    
+    ```python
+    app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://資料庫使用者名稱:資料庫密碼@ip位置/資料庫名稱"
+    db  = SQLAlchemy(app) 
+    ```
+    
+
+設置完成，`flask run`，若成功運行就是連接成功。
+
+[參考資料](https://medium.com/seaniap/python-web-flask-flask-sqlalchemy%E6%93%8D%E4%BD%9Cmysql%E8%B3%87%E6%96%99%E5%BA%AB-2a799acdec4c)
 
 ## Q: Flask-Migrate 如何使用？ #124
 
