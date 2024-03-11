@@ -35,7 +35,7 @@ class Post(db.Model):
     id = sa.Column('id', sa.Integer, primary_key=True)
     body = sa.Column('body', sa.String(140))
     timestamp = sa.Column('timestamp', sa.DateTime, index=True, default=lambda: datetime.now(timezone.utc))
-    user_id = db.Column('user_id', db.Integer, sa.ForeignKey("user.id"), index=True)
+    user_id = sa.Column('user_id', sa.Integer, sa.ForeignKey("user.id"), index=True)
     author: so.Mapped[User] = so.relationship(back_populates='posts')
 
     def __repr__(self):
@@ -48,3 +48,4 @@ with app.app_context():
 def load_user(id):
     user = db.session.scalars(sa.select(User).from_statement(sa.text(f"SELECT * FROM user WHERE id = {id}"))).first()
     return user
+
